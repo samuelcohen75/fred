@@ -18,12 +18,14 @@ import { useConversationsDeps } from "./deps/conversations";
 import { useKnowledgeDeps } from "./deps/knowledge";
 import { usePlatformDeps } from "./deps/platform";
 import { usePromptsDeps } from "./deps/prompts";
+import { useTeamsDeps } from "./deps/teams";
 import { agentsScenario } from "./scenarios/agentsScenario";
 import { authorizationScenario } from "./scenarios/authorizationScenario";
 import { conversationsScenario } from "./scenarios/conversationsScenario";
 import { knowledgeScenario } from "./scenarios/knowledgeScenario";
 import { platformScenario } from "./scenarios/platformScenario";
 import { promptsScenario } from "./scenarios/promptsScenario";
+import { teamsScenario } from "./scenarios/teamsScenario";
 import { webResearchScenario } from "./scenarios/webResearchScenario";
 import { useAuthzProbeRun } from "./useAuthzProbeRun";
 import { usePipelineDeps } from "./usePipelineRun";
@@ -58,6 +60,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const agents = useScenarioRun(agentsScenario, useAgentsDeps());
   const prompts = useScenarioRun(promptsScenario, usePromptsDeps());
   const conversations = useScenarioRun(conversationsScenario, useConversationsDeps());
+  const teams = useScenarioRun(teamsScenario, useTeamsDeps());
   const web = useScenarioRun(webResearchScenario, deps);
 
   return [
@@ -68,6 +71,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
     { id: "agents", icon: "smart_toy", run: agents },
     { id: "prompts", icon: "notes", run: prompts },
     { id: "conversations", icon: "forum", run: conversations },
+    { id: "teams", icon: "groups", run: teams },
     { id: "web", icon: "travel_explore", run: web },
   ];
 }

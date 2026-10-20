@@ -2600,6 +2600,10 @@
         "conversations": {
           "title": "Conversations",
           "subtitle": "Creates two conversations in your personal space and runs a turn in one. Checks that both are listed, that a rename is kept, that an attached file is retrievable in its conversation and never from the other one, that a deleted attachment disappears, the inactive-conversation list, and bulk deletion."
+        },
+        "teams": {
+          "title": "Teams",
+          "subtitle": "Creates a disposable team you administer, then deletes it. Skipped until you accept the team-admin charter; the run never accepts it for you. Checks that team admin alone cannot edit content, that the editor role opens and its revocation closes editing, a team prompt, folder and agent, wiki revisions and restore, the join link, model routing, copying the team agent to your personal space, and that nothing of the deleted team stays reachable."
         }
       }
     },
