@@ -16,6 +16,7 @@ import { useAgentsDeps } from "./deps/agents";
 import { useAuthorizationDeps } from "./deps/authorization";
 import { useKnowledgeDeps } from "./deps/knowledge";
 import { usePlatformDeps } from "./deps/platform";
+import { usePromptsDeps } from "./deps/prompts";
 import { agentsScenario } from "./scenarios/agentsScenario";
 import { authorizationScenario } from "./scenarios/authorizationScenario";
 import { knowledgeScenario } from "./scenarios/knowledgeScenario";
@@ -42,7 +43,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const authorization = useScenarioRun(authorizationScenario, useAuthorizationDeps());
   const knowledge = useScenarioRun(knowledgeScenario, useKnowledgeDeps());
   const agents = useScenarioRun(agentsScenario, useAgentsDeps());
-  const prompts = useScenarioRun(promptsScenario, deps);
+  const prompts = useScenarioRun(promptsScenario, usePromptsDeps());
   const web = useScenarioRun(webResearchScenario, deps);
 
   return [

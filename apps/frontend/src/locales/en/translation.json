@@ -2587,7 +2587,7 @@
         },
         "prompts": {
           "title": "Prompts",
-          "subtitle": "Creates a personal prompt, attaches it to a conversation and checks that the agent receives it."
+          "subtitle": "Creates a category and a personal prompt with a command, attaches the prompt to a conversation and checks that the agent receives it, then that an edit reaches the conversation. Checks the command list, favorites, renaming a category, the marketplace listing, and that a deleted prompt can no longer be read."
         },
         "web": {
           "title": "Web research",

@@ -2587,7 +2587,7 @@
         },
         "prompts": {
           "title": "Prompts",
-          "subtitle": "Crée un prompt personnel, l'attache à une conversation et vérifie que l'agent le reçoit."
+          "subtitle": "Crée une catégorie et un prompt personnel avec une commande, attache le prompt à une conversation et vérifie que l'agent le reçoit, puis qu'une modification atteint la conversation. Vérifie la liste des commandes, les favoris, le renommage d'une catégorie, la liste du marketplace, et qu'un prompt supprimé n'est plus lisible."
         },
         "web": {
           "title": "Recherche web",
