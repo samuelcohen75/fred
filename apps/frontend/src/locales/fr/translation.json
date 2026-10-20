@@ -2579,7 +2579,7 @@
         },
         "knowledge": {
           "title": "Documents et connaissances",
-          "subtitle": "Crée deux dossiers dans votre espace personnel, ingère un document marqueur dans l'un et un document neutre dans l'autre, puis interroge l'agent d'auto-test sur chacun. Le marqueur doit revenir du premier et être absent du second."
+          "subtitle": "Travaille dans votre espace personnel. Vérifie la recherche limitée à un dossier et l'isolation d'un autre via l'agent d'auto-test, la recherche directe selon chaque politique, un petit document par format pris en charge (texte, Markdown, JSON Lines, PDF, Word, Excel, PowerPoint), une requête SQL sur un CSV, l'ajout et le retrait d'un document entre dossiers, la récupérabilité, l'arborescence des documents, l'absence de fragment récupérable après suppression et, en option, l'audit du corpus."
         },
         "agents": {
           "title": "Agents",

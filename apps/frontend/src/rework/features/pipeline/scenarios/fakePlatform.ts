@@ -15,6 +15,7 @@
 // behaves like the deterministic self-test agent: it echoes retrieved text and
 // the prompts it received.
 import type { PipelineDeps, Reporter, StepReport } from "../types";
+import type { KnowledgeDeps } from "./knowledgeScenario";
 import { PROBE, PROMPT_PROBE, SELF_TEST_AGENT_ID } from "./corpus";
 
 export interface FakeDocument {
@@ -61,6 +62,56 @@ export class FakePlatform {
 
   search(libraryIds: string[]): FakeDocument[] {
     return this.documents.filter((d) => d.retrievable && libraryIds.some((l) => d.libraries.has(l)));
+  }
+
+  /** Documents whose chunks the index still returns after a delete (simulates residue). */
+  residue: FakeDocument[] = [];
+  auditAnomalies = 0;
+
+  knowledgeDeps(): KnowledgeDeps {
+    return {
+      ...this.deps(),
+      documentsIn: async (libraryId) =>
+        this.documents.filter((d) => d.libraries.has(libraryId)).map((d) => ({ uid: d.uid, name: d.name })),
+      search: async ({ libraryIds, documentUids }) => {
+        this.fail("search");
+        const pool = [...this.documents, ...this.residue].filter((d) => d.retrievable);
+        const hits = pool.filter(
+          (d) =>
+            (!libraryIds || libraryIds.some((l) => d.libraries.has(l))) &&
+            (!documentUids || documentUids.includes(d.uid)),
+        );
+        return hits.map((d) => ({ uid: d.uid, content: d.text }));
+      },
+      linkDocument: async (libraryId, uid) => {
+        this.documents.find((d) => d.uid === uid)?.libraries.add(libraryId);
+      },
+      unlinkDocument: async (libraryId, uid) => {
+        this.fail("unlink");
+        this.documents.find((d) => d.uid === uid)?.libraries.delete(libraryId);
+      },
+      setRetrievable: async (uid, retrievable) => {
+        const doc = this.documents.find((d) => d.uid === uid);
+        if (doc) doc.retrievable = retrievable;
+      },
+      documentTree: async (libraryId) =>
+        this.documents
+          .filter((d) => d.libraries.has(libraryId))
+          .map((d) => d.name)
+          .join("\n"),
+      tabularRows: async (_libraryId, uid, sql) => {
+        const doc = this.documents.find((d) => d.uid === uid);
+        if (!doc || !sql("alias").includes("alias")) return [];
+        const [header, ...lines] = doc.text.trim().split("\n");
+        const columns = header.split(",");
+        return lines
+          .map((line) => Object.fromEntries(line.split(",").map((v, i) => [columns[i], i === 0 ? Number(v) : v])))
+          .filter((row) => row.code === 1)
+          .map((row) => ({ label: row.label }));
+      },
+      audit: async () => ({ hasAnomalies: this.auditAnomalies > 0, detail: `${this.auditAnomalies} anomaly(ies)` }),
+      sleep: async () => {},
+    };
   }
 
   deps(): PipelineDeps {

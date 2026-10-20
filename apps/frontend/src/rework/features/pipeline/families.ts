@@ -13,6 +13,7 @@
 // limitations under the License.
 import type { IconType } from "../../components/shared/utils/Type";
 import { useAuthorizationDeps } from "./deps/authorization";
+import { useKnowledgeDeps } from "./deps/knowledge";
 import { usePlatformDeps } from "./deps/platform";
 import { agentsScenario } from "./scenarios/agentsScenario";
 import { authorizationScenario } from "./scenarios/authorizationScenario";
@@ -38,7 +39,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const platform = useScenarioRun(platformScenario, usePlatformDeps());
   const identity = useAuthzProbeRun();
   const authorization = useScenarioRun(authorizationScenario, useAuthorizationDeps());
-  const knowledge = useScenarioRun(knowledgeScenario, deps);
+  const knowledge = useScenarioRun(knowledgeScenario, useKnowledgeDeps());
   const agents = useScenarioRun(agentsScenario, deps);
   const prompts = useScenarioRun(promptsScenario, deps);
   const web = useScenarioRun(webResearchScenario, deps);

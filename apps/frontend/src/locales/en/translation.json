@@ -2579,7 +2579,7 @@
         },
         "knowledge": {
           "title": "Documents and knowledge",
-          "subtitle": "Creates two folders in your personal space, ingests a marker document into one and a plain document into the other, then asks the self-test agent a question scoped to each. The marker must come back from the first and be absent from the second."
+          "subtitle": "Works in your personal space. Checks retrieval scoped to one folder and isolation from another through the self-test agent, direct search under each search policy, one small document per supported format (text, Markdown, JSON Lines, PDF, Word, Excel, PowerPoint), a SQL query on a CSV, linking and unlinking a document between folders, retrievability, the document tree, that deleted documents leave no retrievable chunk and, as an optional step, the corpus audit."
         },
         "agents": {
           "title": "Agents",
