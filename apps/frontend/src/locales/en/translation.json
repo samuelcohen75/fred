@@ -2608,6 +2608,10 @@
         "security": {
           "title": "Security",
           "subtitle": "Checks that the platform is served over HTTPS, reports which response-hardening headers the page sets, checks that error responses expose no stack trace, then uploads a harmless SVG to your personal space and checks that its raw download is an attachment and that its inline preview cannot run as a document on this origin."
+        },
+        "observability": {
+          "title": "Observability",
+          "subtitle": "Reads the conversation, message and token usage KPIs over the last day, then checks the health of the search cluster and of every metrics target. A backend this deployment does not run is skipped, never failed."
         }
       }
     },

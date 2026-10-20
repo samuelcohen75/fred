@@ -16,6 +16,7 @@ import { useAgentsDeps } from "./deps/agents";
 import { useAuthorizationDeps } from "./deps/authorization";
 import { useConversationsDeps } from "./deps/conversations";
 import { useKnowledgeDeps } from "./deps/knowledge";
+import { useObservabilityDeps } from "./deps/observability";
 import { usePlatformDeps } from "./deps/platform";
 import { usePromptsDeps } from "./deps/prompts";
 import { useSecurityDeps } from "./deps/security";
@@ -24,6 +25,7 @@ import { agentsScenario } from "./scenarios/agentsScenario";
 import { authorizationScenario } from "./scenarios/authorizationScenario";
 import { conversationsScenario } from "./scenarios/conversationsScenario";
 import { knowledgeScenario } from "./scenarios/knowledgeScenario";
+import { observabilityScenario } from "./scenarios/observabilityScenario";
 import { platformScenario } from "./scenarios/platformScenario";
 import { promptsScenario } from "./scenarios/promptsScenario";
 import { securityScenario } from "./scenarios/securityScenario";
@@ -65,6 +67,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const teams = useScenarioRun(teamsScenario, useTeamsDeps());
   const web = useScenarioRun(webResearchScenario, deps);
   const security = useScenarioRun(securityScenario, useSecurityDeps());
+  const observability = useScenarioRun(observabilityScenario, useObservabilityDeps());
 
   return [
     { id: "platform", icon: "cloud", run: platform },
@@ -77,5 +80,6 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
     { id: "teams", icon: "groups", run: teams },
     { id: "web", icon: "travel_explore", run: web },
     { id: "security", icon: "shield", run: security },
+    { id: "observability", icon: "analytics", run: observability },
   ];
 }

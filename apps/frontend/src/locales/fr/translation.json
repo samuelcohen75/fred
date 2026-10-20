@@ -2608,6 +2608,10 @@
         "security": {
           "title": "Sécurité",
           "subtitle": "Vérifie que la plateforme est servie en HTTPS, indique quels en-têtes de durcissement la page envoie, vérifie que les réponses d'erreur n'exposent aucune trace d'exécution, puis dépose un SVG inoffensif dans votre espace personnel et vérifie que son téléchargement brut est une pièce jointe et que son aperçu ne peut pas s'exécuter comme document sur cette origine."
+        },
+        "observability": {
+          "title": "Observabilité",
+          "subtitle": "Lit les KPI de conversations, de messages et de consommation de jetons sur la dernière journée, puis vérifie la santé du cluster de recherche et de chaque cible de métriques. Un backend que ce déploiement n'utilise pas est ignoré, jamais compté en échec."
         }
       }
     },
