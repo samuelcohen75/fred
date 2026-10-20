@@ -30,8 +30,14 @@ See [proposal.md](proposal.md). Verified constraints:
 - **Missing optional deployment features skip.** A disabled wiki, an absent
   OpenSearch or Prometheus, or an unset proxy header is reported as skipped
   with the reason, not failed.
-- **Response safety fails.** Uploaded HTML served inline as `text/html` without
-  a sandboxing policy fails, because it runs on the platform origin.
+- **Response safety fails.** An uploaded SVG previewed inline without a
+  sandboxing policy fails, because opened as a document it runs on the
+  platform origin. HTML is not tested: the default ingestion profile has no
+  HTML processor.
+- **Formats checked against the real processors.** Each format fixture was fed
+  to the default profile's processors locally, and each extracted its marker.
+  An Excel table goes to tabular storage, not to text, so the Excel fixture is a
+  single text cell.
 
 ## Non-Goals
 

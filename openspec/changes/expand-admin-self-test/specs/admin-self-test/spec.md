@@ -44,9 +44,10 @@ The platform family SHALL check, without writing anything: control-plane and
 knowledge-flow health and readiness; that the account-status check answers;
 that the token issuer matches the public provider configuration; browser,
 token and server clocks; that every agent runtime serves at least one
-available template; that the harness agent is available; that the team's chat
-model resolves and is usable; and that capabilities, model bindings, knowledge
-base definitions, UI settings, announcements and the purge policy can be read.
+available template; that the harness agent is available; that at least one
+chat model profile is offered; and that capabilities, model bindings,
+knowledge base definitions, UI settings, announcements and the purge policy can
+be read.
 
 #### Scenario: A runtime is down
 
@@ -71,8 +72,9 @@ belong to, team content routes are refused with 403 or 404.
 The knowledge family SHALL work in the admin's personal space and SHALL check:
 retrieval scoped to one folder and isolation from another through a real agent
 turn; direct search under each search policy; ingestion and retrieval of one
-small document per text, Markdown, CSV, HTML and PDF format; a SQL query on the
-CSV; that linking a document into a second folder makes it retrievable there
+small document per format the default ingestion profile processes as text:
+plain text, Markdown, JSON Lines, PDF, Word, Excel and PowerPoint; a SQL query
+on a CSV; that linking a document into a second folder makes it retrievable there
 and unlinking removes it; that a non-retrievable document is not returned; the
 folder's document tree; that deleting a folder leaves no retrievable chunk of
 its documents; and, as an optional step, the corpus audit.
@@ -85,7 +87,8 @@ its documents; and, as an optional step, the corpus audit.
 ### Requirement: Agents family
 
 The agents family SHALL check, with the harness agent in the personal space:
-system-prompt delivery; that an updated system prompt is delivered on every one
+system-prompt delivery; that the agent's chat model resolves and is usable;
+that an updated system prompt is delivered on every one
 of several following turns; that a disabled instance cannot run and runs again
 once enabled; that copy targets include the personal space; that a duplicate
 under a chosen name is created and a second one under the same name is
@@ -102,8 +105,10 @@ their own session's context.
 The prompts family SHALL check delivery of a context prompt, delivery of its
 updated text, prompt categories, favorites, prompt commands, the marketplace
 listing, and that a deleted prompt can no longer be read. The conversations
-family SHALL check session listing, rename, persistence of a turn, attachment
-upload, listing and deletion, and bulk deletion.
+family SHALL check that a turn runs in its conversation, session listing,
+rename, that an attachment is retrievable in its own conversation and never
+from another one of the same person, attachment deletion, the inactive
+conversations list, and bulk deletion.
 
 #### Scenario: A deleted prompt is still readable
 
@@ -129,12 +134,13 @@ reachable.
 ### Requirement: Security and observability families
 
 The security family SHALL report which response-hardening headers the page
-origin sets, as an optional step, and SHALL fail when an uploaded HTML
-document is served inline as HTML without a sandboxing policy. The
+origin sets, as an optional step, SHALL fail on plain HTTP outside a local address and on
+error bodies that expose a stack trace, and SHALL fail when an uploaded SVG
+document is served inline as SVG or HTML without a sandboxing policy. The
 observability family SHALL check that usage KPI presets can be read, and SHALL
 skip the search and metrics backends when the deployment does not provide them.
 
-#### Scenario: Uploaded HTML is served inline
+#### Scenario: An uploaded SVG is served inline
 
-- **WHEN** the streamed content of an uploaded HTML document comes back as `text/html` with no `sandbox` policy
+- **WHEN** the streamed preview of an uploaded SVG comes back inline as `image/svg+xml` with no `sandbox` policy
 - **THEN** the step fails, because the document would run on the platform origin
