@@ -2592,6 +2592,10 @@
         "web": {
           "title": "Web research",
           "subtitle": "Runs the deterministic web research agent through the real execution pipeline. It fails first when web research is not enabled on this deployment; otherwise it proves each protection holds: refused schemes, ports and credentials, loopback, private, metadata and encoded addresses, platform service names, redirects to internal destinations, binary content, and a SafeSearch the model cannot weaken. Then it checks that search and page reading work. Probes that need an unreachable third-party endpoint are skipped, never passed. The temporary agent is deleted at the end."
+        },
+        "platform": {
+          "title": "Platform",
+          "subtitle": "Reads the deployment without changing it: service health and readiness, account status, the identity provider and its token issuer, clocks, agent runtimes and the self-test agent, model profiles, the capability catalog and the main admin settings."
         }
       }
     },

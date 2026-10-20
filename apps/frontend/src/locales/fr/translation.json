@@ -2592,6 +2592,10 @@
         "web": {
           "title": "Recherche web",
           "subtitle": "Exécute l'agent déterministe de recherche web à travers le vrai pipeline d'exécution. Il échoue d'emblée si la recherche web n'est pas activée sur ce déploiement ; sinon il prouve que chaque protection tient : schémas, ports et identifiants refusés, adresses loopback, privées, de métadonnées et encodées, noms des services de la plateforme, redirections vers des destinations internes, contenu binaire et un SafeSearch que le modèle ne peut pas affaiblir. Il vérifie ensuite que la recherche et la lecture de page fonctionnent. Les sondes qui dépendent d'un service tiers injoignable sont ignorées, jamais validées. L'agent temporaire est supprimé à la fin."
+        },
+        "platform": {
+          "title": "Plateforme",
+          "subtitle": "Lit le déploiement sans rien modifier : santé et disponibilité des services, statut du compte, fournisseur d'identité et émetteur du jeton, horloges, runtimes d'agents et agent d'auto-test, profils de modèles, catalogue des capacités et principaux réglages d'administration."
         }
       }
     },

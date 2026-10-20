@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import type { IconType } from "../../components/shared/utils/Type";
+import { usePlatformDeps } from "./deps/platform";
 import { agentsScenario } from "./scenarios/agentsScenario";
 import { knowledgeScenario } from "./scenarios/knowledgeScenario";
+import { platformScenario } from "./scenarios/platformScenario";
 import { promptsScenario } from "./scenarios/promptsScenario";
 import { webResearchScenario } from "./scenarios/webResearchScenario";
 import { useAuthzProbeRun } from "./useAuthzProbeRun";
 import { usePipelineDeps } from "./usePipelineRun";
 import { useScenarioRun, type PipelineRun } from "./useScenarioRun";
 
-export type FamilyId = "identity" | "authorization" | "knowledge" | "agents" | "prompts" | "web";
+export type FamilyId = "platform" | "identity" | "authorization" | "knowledge" | "agents" | "prompts" | "web";
 
 export interface SelfTestFamily {
   id: FamilyId;
@@ -31,6 +33,7 @@ export interface SelfTestFamily {
 /** Every family, in page order. The hooks run unconditionally, so the order never changes. */
 export function useSelfTestFamilies(): SelfTestFamily[] {
   const deps = usePipelineDeps();
+  const platform = useScenarioRun(platformScenario, usePlatformDeps());
   const identity = useAuthzProbeRun();
   const authorization = useAuthzProbeRun();
   const knowledge = useScenarioRun(knowledgeScenario, deps);
@@ -39,6 +42,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const web = useScenarioRun(webResearchScenario, deps);
 
   return [
+    { id: "platform", icon: "cloud", run: platform },
     { id: "identity", icon: "person", run: { ...identity, start: identity.runIdentity } },
     { id: "authorization", icon: "admin_panel_settings", run: { ...authorization, start: authorization.runForMyself } },
     { id: "knowledge", icon: "database", run: knowledge },
