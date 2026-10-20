@@ -2604,6 +2604,10 @@
         "teams": {
           "title": "Équipes",
           "subtitle": "Crée une équipe jetable que vous administrez, puis la supprime. Ignorée tant que vous n'avez pas accepté la charte d'administrateur d'équipe ; l'exécution ne l'accepte jamais à votre place. Vérifie que le seul rôle d'admin ne permet pas de modifier le contenu, que le rôle d'éditeur ouvre la modification et que son retrait la referme, un prompt, un dossier et un agent d'équipe, les révisions et la restauration du wiki, le lien d'invitation, le routage des modèles, la copie de l'agent d'équipe vers votre espace personnel, et que rien de l'équipe supprimée ne reste accessible."
+        },
+        "security": {
+          "title": "Sécurité",
+          "subtitle": "Vérifie que la plateforme est servie en HTTPS, indique quels en-têtes de durcissement la page envoie, vérifie que les réponses d'erreur n'exposent aucune trace d'exécution, puis dépose un SVG inoffensif dans votre espace personnel et vérifie que son téléchargement brut est une pièce jointe et que son aperçu ne peut pas s'exécuter comme document sur cette origine."
         }
       }
     },

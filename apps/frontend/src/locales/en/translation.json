@@ -2604,6 +2604,10 @@
         "teams": {
           "title": "Teams",
           "subtitle": "Creates a disposable team you administer, then deletes it. Skipped until you accept the team-admin charter; the run never accepts it for you. Checks that team admin alone cannot edit content, that the editor role opens and its revocation closes editing, a team prompt, folder and agent, wiki revisions and restore, the join link, model routing, copying the team agent to your personal space, and that nothing of the deleted team stays reachable."
+        },
+        "security": {
+          "title": "Security",
+          "subtitle": "Checks that the platform is served over HTTPS, reports which response-hardening headers the page sets, checks that error responses expose no stack trace, then uploads a harmless SVG to your personal space and checks that its raw download is an attachment and that its inline preview cannot run as a document on this origin."
         }
       }
     },
