@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import {
   useDeleteTeamAgentInstanceControlPlaneV1TeamsTeamIdAgentInstancesAgentInstanceIdDeleteMutation,
   useDeleteTeamPromptControlPlaneV1TeamsTeamIdPromptsPromptIdDeleteMutation,
@@ -30,22 +30,13 @@ import {
   useLazyListTagsQuery,
 } from "../../../slices/knowledgeFlow/knowledgeFlowOpenApi";
 import { awaitIngestion, streamAgentTurn, uploadDocument } from "./actions";
-import type { PipelineDeps, Scenario, StepReport } from "./types";
+import type { PipelineDeps, Scenario } from "./types";
+import { useScenarioRun, type PipelineRun } from "./useScenarioRun";
 import { KeyCloakService } from "../../../security/KeycloakService";
 import { personalTeamId } from "../../components/shared/utils/teamId";
 
-export interface PipelineRun {
-  steps: StepReport[];
-  isRunning: boolean;
-  start: () => void;
-}
-
-/**
- * Generic runner: binds the real product hooks into the PipelineDeps contract,
- * runs ANY scenario, and tracks each step for the UI. The admin self-test page
- * passes the self-test scenario; a future eval-demo page passes its own.
- */
-export function usePipelineRun(scenario: Scenario): PipelineRun {
+/** Binds the real product hooks into the PipelineDeps contract, as the signed-in admin. */
+export function usePipelineDeps(): PipelineDeps {
   // Canonical personal-team id (`personal-<uid>`), NOT the bare "personal" alias.
   // The control-plane accepts both (teams/system.py), but the agent pod is now the
   // OpenFGA authority and checks ReBAC against the canonical id only — the bare
@@ -66,21 +57,7 @@ export function usePipelineRun(scenario: Scenario): PipelineRun {
   const [patchSession] = usePatchTeamSessionControlPlaneV1TeamsTeamIdSessionsSessionIdPatchMutation();
   const [deleteSessionMutation] = useDeleteTeamSessionControlPlaneV1TeamsTeamIdSessionsSessionIdDeleteMutation();
 
-  const [steps, setSteps] = useState<StepReport[]>([]);
-  const [isRunning, setIsRunning] = useState(false);
-  const controllerRef = useRef<AbortController | null>(null);
-
-  const report = useCallback((step: StepReport) => {
-    setSteps((prev) => {
-      const i = prev.findIndex((s) => s.id === step.id);
-      if (i === -1) return [...prev, step];
-      const next = [...prev];
-      next[i] = step;
-      return next;
-    });
-  }, []);
-
-  const deps: PipelineDeps = useMemo(
+  return useMemo(
     () => ({
       teamId,
       createLibrary: async (name) => {
@@ -198,19 +175,10 @@ export function usePipelineRun(scenario: Scenario): PipelineRun {
       deleteSessionMutation,
     ],
   );
+}
 
-  const start = useCallback(() => {
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    controllerRef.current = controller;
-    setSteps([]);
-    setIsRunning(true);
-    void scenario(deps, report, controller.signal).finally(() => {
-      if (!controller.signal.aborted) setIsRunning(false);
-    });
-  }, [deps, report, scenario]);
+export type { PipelineRun };
 
-  useEffect(() => () => controllerRef.current?.abort(), []);
-
-  return { steps, isRunning, start };
+export function usePipelineRun(scenario: Scenario): PipelineRun {
+  return useScenarioRun(scenario, usePipelineDeps());
 }

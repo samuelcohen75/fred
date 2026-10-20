@@ -2529,7 +2529,10 @@
     },
     "selftest": {
       "page": {
-        "title": "Self-test"
+        "title": "Self-test",
+        "subtitle": "Each family checks one area of this deployment, as you, on the real services. Everything a run creates carries the run's token and is deleted at the end.",
+        "runAll": "Run all",
+        "copyAll": "Copy full report"
       },
       "report": {
         "verified": "Verified",
@@ -2540,22 +2543,7 @@
         "copy": "Copy report",
         "copied": "Copied"
       },
-      "functional": {
-        "title": "Functional self-test",
-        "subtitle": "Create two folders in your personal space, ingest a marker document into one and a plain document into the other, then ask the real self-test agent a question scoped to each — the marker must come back from the first and be absent from the second. Everything is cleaned up at the end.",
-        "run": "Run campaign"
-      },
-      "web": {
-        "title": "Web research self-test",
-        "subtitle": "Run the deterministic web research agent through the real execution pipeline. It fails first when web research is not enabled on this deployment; otherwise it proves each protection holds — refused schemes, ports and credentials, loopback, private, metadata and encoded addresses, platform service names, redirects to internal destinations, binary content, and a SafeSearch the model cannot weaken — then that search and page reading work. Probes that need an unreachable third-party endpoint are skipped, never passed. The temporary agent is deleted at the end.",
-        "run": "Run web research checks"
-      },
       "authz": {
-        "identityTitle": "JWT authentication self-test",
-        "identityDescription": "Checks authenticated access to the three APIs, rejection of missing or invalid tokens, public routes and personal-space identity. Checks that do not apply to this provider are skipped with a reason.",
-        "title": "Authorization self-test",
-        "subtitle": "Proves the live API honors the authorization model: platform-admin flags match real endpoint access, and nobody — not even a platform admin — gets implicit access to a team they don't belong to.",
-        "runSelf": "Run for myself",
         "expiry": {
           "title": "Agent access after your session expires",
           "run": "Run session-expiry check",
@@ -2575,8 +2563,36 @@
           "run": "Run",
           "caption": "Requires that account's own password and Keycloak direct-grant login enabled for this realm — already on in local/demo realms, test/dev-only by design. This does not grant any new access — it reports what that account can already do.",
           "disabledInsecure": "Not available in this deployment — there is no real Keycloak realm to authenticate against."
+        }
+      },
+      "family": {
+        "run": "Run"
+      },
+      "families": {
+        "identity": {
+          "title": "Identity and session",
+          "subtitle": "Checks authenticated access to the three APIs, rejection of missing or invalid tokens, public routes and personal-space identity. Checks that do not apply to this provider are skipped with a reason."
         },
-        "identityRun": "Run checks"
+        "authorization": {
+          "title": "Authorization",
+          "subtitle": "Proves the live API honors the authorization model: platform-admin flags match real endpoint access, and nobody, not even a platform admin, gets implicit access to a team they don't belong to."
+        },
+        "knowledge": {
+          "title": "Documents and knowledge",
+          "subtitle": "Creates two folders in your personal space, ingests a marker document into one and a plain document into the other, then asks the self-test agent a question scoped to each. The marker must come back from the first and be absent from the second."
+        },
+        "agents": {
+          "title": "Agents",
+          "subtitle": "Enrolls a temporary instance of the deterministic self-test agent in your personal space and checks that its configuration reaches every turn."
+        },
+        "prompts": {
+          "title": "Prompts",
+          "subtitle": "Creates a personal prompt, attaches it to a conversation and checks that the agent receives it."
+        },
+        "web": {
+          "title": "Web research",
+          "subtitle": "Runs the deterministic web research agent through the real execution pipeline. It fails first when web research is not enabled on this deployment; otherwise it proves each protection holds: refused schemes, ports and credentials, loopback, private, metadata and encoded addresses, platform service names, redirects to internal destinations, binary content, and a SafeSearch the model cannot weaken. Then it checks that search and page reading work. Probes that need an unreachable third-party endpoint are skipped, never passed. The temporary agent is deleted at the end."
+        }
       }
     },
     "tasks": {

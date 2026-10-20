@@ -1,0 +1,143 @@
+// Copyright Thales 2026
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// Test-only, in-memory stand-in for the platform the families drive. Its agent
+// behaves like the deterministic self-test agent: it echoes retrieved text and
+// the prompts it received.
+import type { PipelineDeps, Reporter, StepReport } from "../types";
+import { PROBE, PROMPT_PROBE, SELF_TEST_AGENT_ID } from "./corpus";
+
+export interface FakeDocument {
+  uid: string;
+  name: string;
+  text: string;
+  libraries: Set<string>;
+  retrievable: boolean;
+}
+
+export class FakePlatform {
+  libraries = new Map<string, string>();
+  documents: FakeDocument[] = [];
+  agents = new Map<string, { template: string; name: string; system: string; enabled: boolean }>();
+  prompts = new Map<string, { name: string; text: string }>();
+  sessions = new Map<string, { agent: string; title: string; prompts: string[] }>();
+  templates = new Set([SELF_TEST_AGENT_ID]);
+  failures = new Set<string>();
+  private next = 0;
+
+  id(prefix: string): string {
+    this.next += 1;
+    return `${prefix}-${this.next}`;
+  }
+
+  fail(name: string): void {
+    if (this.failures.has(name)) throw new Error(`${name} failed`);
+  }
+
+  answer(agentId: string, question: string, libraryIds: string[], sessionId?: string | null) {
+    const agent = this.agents.get(agentId);
+    if (!agent || !agent.enabled) throw Object.assign(new Error("agent unavailable"), { status: 409 });
+    if (question === PROMPT_PROBE) {
+      const session = sessionId ? this.sessions.get(sessionId) : undefined;
+      const context = (session?.prompts ?? []).map((id) => this.prompts.get(id)?.text ?? "").join("\n");
+      return { answer: `system_prompt: ${agent.system}\ncontext_prompt: ${context}`, sources: [] };
+    }
+    if (question === PROBE) {
+      const hits = this.search(libraryIds);
+      return { answer: hits.map((d) => d.text).join("\n"), sources: hits.map((d) => d.uid) };
+    }
+    return { answer: "", sources: [] };
+  }
+
+  search(libraryIds: string[]): FakeDocument[] {
+    return this.documents.filter((d) => d.retrievable && libraryIds.some((l) => d.libraries.has(l)));
+  }
+
+  deps(): PipelineDeps {
+    return {
+      teamId: "personal-admin",
+      createLibrary: async (name) => {
+        this.fail("createLibrary");
+        const id = this.id("lib");
+        this.libraries.set(id, name);
+        return id;
+      },
+      deleteLibrary: async (id) => {
+        this.libraries.delete(id);
+        this.documents = this.documents.filter((d) => {
+          d.libraries.delete(id);
+          return d.libraries.size > 0;
+        });
+      },
+      listLibraries: async () => [...this.libraries].map(([id, name]) => ({ id, name })),
+      ingestDocument: async (libraryId, file) => {
+        this.fail(`ingest:${file.name}`);
+        this.documents.push({
+          uid: this.id("doc"),
+          name: file.name,
+          text: await file.text(),
+          libraries: new Set([libraryId]),
+          retrievable: true,
+        });
+      },
+      provisionAgentInstance: async (template, tuning) => {
+        if (!this.templates.has(template)) return null;
+        const id = this.id("agent");
+        const system = String(tuning?.["prompts.system"] ?? "");
+        this.agents.set(id, { template, name: "Self-test (auto)", system, enabled: true });
+        return id;
+      },
+      deleteAgentInstance: async (id) => {
+        this.agents.delete(id);
+      },
+      createContextPrompt: async (name, text) => {
+        const id = this.id("prompt");
+        this.prompts.set(id, { name, text });
+        return id;
+      },
+      deleteContextPrompt: async (id) => {
+        this.prompts.delete(id);
+      },
+      createSession: async (agent) => {
+        const id = this.id("session");
+        this.sessions.set(id, { agent, title: "Self-test (auto)", prompts: [] });
+        return id;
+      },
+      attachSessionPrompts: async (sessionId, promptIds) => {
+        const session = this.sessions.get(sessionId);
+        if (session) session.prompts = [...promptIds];
+      },
+      deleteSession: async (id) => {
+        this.sessions.delete(id);
+      },
+      runAgentTurn: async ({ agentInstanceId, question, libraryIds, sessionId }) => {
+        this.fail("runAgentTurn");
+        const { answer, sources } = this.answer(agentInstanceId, question, libraryIds, sessionId);
+        return { answer, sources, sessionId: sessionId ?? null, statusSeenAt: {} };
+      },
+    };
+  }
+}
+
+/** Collects the last report of every step, in first-seen order. */
+export function collect(): { steps: StepReport[]; report: Reporter; status: (id: string) => string } {
+  const steps: StepReport[] = [];
+  const report: Reporter = (step) => {
+    const i = steps.findIndex((s) => s.id === step.id);
+    if (i === -1) steps.push(step);
+    else steps[i] = step;
+  };
+  return { steps, report, status: (id) => steps.find((s) => s.id === id)?.status ?? "missing" };
+}
+
+export const signal = new AbortController().signal;

@@ -165,3 +165,9 @@
   color: var(--on-surface-retreat);
   font: var(--font-body-medium);
 }
+
+.pageActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-s);
+}

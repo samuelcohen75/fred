@@ -33,15 +33,15 @@ const h = vi.hoisted(() => ({
     realm: string;
     clientId: string;
   } | null,
-  // The functional scenario is mocked to a known identity, so the pipeline-run
-  // mock can tell the two runs apart: the page now wraps the expiry one.
-  functionalScenario: async () => {},
   expiryScenario: async () => {},
   steps: {
     expiry: [{ id: "expiry-turn", title: "EXPIRY_STEP", status: "passed" as const }],
-    functional: [{ id: "create-folder", title: "FUNCTIONAL_STEP", status: "passed" as const }],
     authz: [{ id: "bootstrap-flags", title: "AUTHZ_STEP", status: "passed" as const }],
   },
+  familyRunning: false,
+  started: [] as string[],
+  // Families resolve in order; "knowledge" fails, which must not stop the next.
+  families: ["identity", "authorization", "knowledge", "agents"],
   factoryCalls: [] as (CredentialExpiryInput | undefined)[],
   expiryStarted: 0,
   expiryRunning: false,
@@ -70,23 +70,33 @@ vi.mock("../../../../features/pipeline/scenarios/credentialExpiryScenario", asyn
   },
 }));
 
-vi.mock("../../../../features/pipeline/scenarios/selfTestScenario", () => ({
-  selfTestScenario: h.functionalScenario,
+vi.mock("../../../../features/pipeline/usePipelineRun", () => ({
+  usePipelineRun: (scenario: Scenario) => ({
+    steps: h.steps.expiry,
+    isRunning: h.expiryRunning,
+    start: async () => {
+      h.expiryStarted += 1;
+      await scenario({} as never, () => {}, new AbortController().signal);
+    },
+  }),
 }));
 
-vi.mock("../../../../features/pipeline/usePipelineRun", () => ({
-  usePipelineRun: (scenario: Scenario) => {
-    const isExpiry = scenario !== h.functionalScenario;
-    return {
-      steps: isExpiry ? h.steps.expiry : h.steps.functional,
-      isRunning: isExpiry && h.expiryRunning,
-      start: () => {
-        if (!isExpiry) return;
-        h.expiryStarted += 1;
-        void scenario({} as never, () => {}, new AbortController().signal);
+vi.mock("../../../../features/pipeline/families", () => ({
+  useSelfTestFamilies: () =>
+    h.families.map((id) => ({
+      id,
+      icon: "check_circle",
+      run: {
+        steps: [
+          { id: `${id}-step`, title: `${id.toUpperCase()}_STEP`, status: id === "knowledge" ? "failed" : "passed" },
+        ],
+        isRunning: h.familyRunning,
+        start: async () => {
+          h.started.push(id);
+          if (id === "knowledge") throw new Error("knowledge family crashed");
+        },
       },
-    };
-  },
+    })),
 }));
 
 vi.mock("../../../../features/pipeline/useAuthzProbeRun", () => ({
@@ -123,6 +133,8 @@ beforeEach(() => {
   h.factoryCalls.length = 0;
   h.expiryStarted = 0;
   h.expiryRunning = false;
+  h.familyRunning = false;
+  h.started.length = 0;
   h.tokenSecondsLeft = 285;
   h.realmConfig = { url: "https://auth.example/", realm: "test-realm", clientId: "web-app" };
   container = document.createElement("div");
@@ -144,6 +156,10 @@ function buttonLabelled(key: string): HTMLButtonElement {
   const button = Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(key));
   if (!button) throw new Error(`no button for ${key}`);
   return button;
+}
+
+function buttonsLabelled(key: string): HTMLButtonElement[] {
+  return Array.from(container.querySelectorAll("button")).filter((b) => b.textContent?.includes(key));
 }
 
 function passwordInput(): HTMLInputElement {
@@ -259,8 +275,8 @@ describe("SelfTestPage credential-expiry check", () => {
       root.render(<SelfTestPage />);
     });
 
-    expect(buttonLabelled("rework.selftest.functional.run").disabled).toBe(true);
-    expect(buttonLabelled("rework.selftest.authz.runSelf").disabled).toBe(true);
+    for (const button of buttonsLabelled("rework.selftest.family.run")) expect(button.disabled).toBe(true);
+    expect(buttonLabelled("rework.selftest.page.runAll").disabled).toBe(true);
     expect(buttonLabelled("rework.selftest.authz.expiry.run").disabled).toBe(true);
   });
 
@@ -286,5 +302,40 @@ describe("SelfTestPage credential-expiry check", () => {
 
     expect(container.textContent).toContain("rework.selftest.authz.expiry.title");
     expect(container.textContent).not.toContain("rework.selftest.authz.testProfile.title");
+  });
+});
+
+describe("SelfTestPage families", () => {
+  it("renders one section per family, in registry order", () => {
+    const order = Array.from(container.querySelectorAll("[data-family]")).map((s) => s.getAttribute("data-family"));
+    expect(order).toEqual(h.families);
+    expect(container.textContent).toContain("rework.selftest.families.knowledge.title");
+  });
+
+  it("runs every family in order and keeps going after one fails", async () => {
+    await act(async () => {
+      buttonLabelled("rework.selftest.page.runAll").dispatchEvent(
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
+      );
+    });
+    expect(h.started).toEqual(h.families);
+    // The long session-expiry check is never part of Run all.
+    expect(h.expiryStarted).toBe(0);
+  });
+
+  it("keeps the authorization extras inside the authorization family", () => {
+    const authorization = container.querySelector('[data-family="authorization"]');
+    expect(authorization?.textContent).toContain("rework.selftest.authz.expiry.title");
+    expect(container.querySelector('[data-family="knowledge"]')?.textContent).not.toContain(
+      "rework.selftest.authz.expiry.title",
+    );
+  });
+
+  it("names every family in English and French", () => {
+    for (const id of h.families) {
+      const key = id as keyof typeof en.rework.selftest.families;
+      expect(en.rework.selftest.families[key].title).toBeTruthy();
+      expect(fr.rework.selftest.families[key].title).toBeTruthy();
+    }
   });
 });

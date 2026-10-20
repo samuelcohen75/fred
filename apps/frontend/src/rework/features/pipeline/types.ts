@@ -102,4 +102,4 @@ export interface PipelineDeps {
 }
 
 /** A scenario composes actions and reports each step. */
-export type Scenario = (deps: PipelineDeps, report: Reporter, signal: AbortSignal) => Promise<void>;
+export type Scenario<D = PipelineDeps> = (deps: D, report: Reporter, signal: AbortSignal) => Promise<void>;
