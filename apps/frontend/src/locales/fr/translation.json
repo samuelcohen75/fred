@@ -2596,6 +2596,10 @@
         "platform": {
           "title": "Plateforme",
           "subtitle": "Lit le déploiement sans rien modifier : santé et disponibilité des services, statut du compte, fournisseur d'identité et émetteur du jeton, horloges, runtimes d'agents et agent d'auto-test, profils de modèles, catalogue des capacités et principaux réglages d'administration."
+        },
+        "conversations": {
+          "title": "Conversations",
+          "subtitle": "Crée deux conversations dans votre espace personnel et exécute un tour dans l'une. Vérifie qu'elles sont listées, qu'un renommage est conservé, qu'un fichier joint est retrouvé dans sa conversation et jamais depuis l'autre, qu'une pièce jointe supprimée disparaît, la liste des conversations inactives et la suppression groupée."
         }
       }
     },

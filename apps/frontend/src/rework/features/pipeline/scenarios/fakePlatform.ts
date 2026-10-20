@@ -16,6 +16,7 @@
 // the prompts it received.
 import type { PipelineDeps, Reporter, StepReport } from "../types";
 import type { AgentsDeps } from "./agentsScenario";
+import type { ConversationsDeps } from "./conversationsScenario";
 import type { KnowledgeDeps } from "./knowledgeScenario";
 import type { PromptsDeps } from "./promptsScenario";
 import { PROBE, PROMPT_PROBE, SELF_TEST_AGENT_ID } from "./corpus";
@@ -37,6 +38,7 @@ export class FakePlatform {
     { name: string; text: string; categoryId?: string; command?: string; favorite?: boolean }
   >();
   categories = new Map<string, string>();
+  attachments = new Map<string, { sessionId: string; text: string }>();
   sessions = new Map<string, { agent: string; title: string; prompts: string[] }>();
   templates = new Set([SELF_TEST_AGENT_ID]);
   failures = new Set<string>();
@@ -142,6 +144,49 @@ export class FakePlatform {
         this.categories.delete(id);
       },
       marketplaceCount: async () => 0,
+    };
+  }
+
+  conversationsDeps(): ConversationsDeps {
+    const missing = () => Object.assign(new Error("not found"), { status: 404 });
+    const base = this.deps();
+    return {
+      ...base,
+      deleteSession: async (id) => {
+        this.sessions.delete(id);
+        for (const [a, v] of this.attachments) if (v.sessionId === id) this.attachments.delete(a);
+      },
+      listSessions: async () => [...this.sessions].map(([id, s]) => ({ id, title: s.title })),
+      readSession: async (id) => {
+        const session = this.sessions.get(id);
+        if (!session) throw missing();
+        return { title: session.title, agentId: session.agent };
+      },
+      renameSession: async (id, title) => {
+        const session = this.sessions.get(id);
+        if (!session) throw missing();
+        session.title = title;
+      },
+      attach: async (sessionId, file) => {
+        const id = this.id("attachment");
+        this.attachments.set(id, { sessionId, text: await file.text() });
+        return id;
+      },
+      listAttachments: async (sessionId) =>
+        [...this.attachments].filter(([, a]) => a.sessionId === sessionId).map(([id]) => id),
+      deleteAttachment: async (_sessionId, id) => {
+        this.attachments.delete(id);
+      },
+      searchSession: async (sessionId) =>
+        [...this.attachments]
+          .filter(([, a]) => a.sessionId === sessionId)
+          .map(([uid, a]) => ({ uid, content: a.text })),
+      bulkDelete: async (ids) => {
+        const deleted = ids.filter((id) => this.sessions.delete(id));
+        return { deleted, failed: ids.filter((id) => !deleted.includes(id)) };
+      },
+      inactiveCount: async () => 0,
+      sleep: async () => {},
     };
   }
 

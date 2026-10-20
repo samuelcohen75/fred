@@ -2596,6 +2596,10 @@
         "platform": {
           "title": "Platform",
           "subtitle": "Reads the deployment without changing it: service health and readiness, account status, the identity provider and its token issuer, clocks, agent runtimes and the self-test agent, model profiles, the capability catalog and the main admin settings."
+        },
+        "conversations": {
+          "title": "Conversations",
+          "subtitle": "Creates two conversations in your personal space and runs a turn in one. Checks that both are listed, that a rename is kept, that an attached file is retrievable in its conversation and never from the other one, that a deleted attachment disappears, the inactive-conversation list, and bulk deletion."
         }
       }
     },
