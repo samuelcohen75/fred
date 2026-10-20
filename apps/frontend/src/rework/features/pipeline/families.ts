@@ -60,13 +60,14 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const platform = useScenarioRun(platformScenario, usePlatformDeps());
   const identity = useAuthzProbeRun();
   const authorization = useScenarioRun(authorizationScenario, useAuthorizationDeps());
-  const knowledge = useScenarioRun(knowledgeScenario, useKnowledgeDeps());
-  const agents = useScenarioRun(agentsScenario, useAgentsDeps());
-  const prompts = useScenarioRun(promptsScenario, usePromptsDeps());
-  const conversations = useScenarioRun(conversationsScenario, useConversationsDeps());
+  const knowledgeDeps = useKnowledgeDeps(deps);
+  const knowledge = useScenarioRun(knowledgeScenario, knowledgeDeps);
+  const agents = useScenarioRun(agentsScenario, useAgentsDeps(deps));
+  const prompts = useScenarioRun(promptsScenario, usePromptsDeps(deps));
+  const conversations = useScenarioRun(conversationsScenario, useConversationsDeps(deps));
   const teams = useScenarioRun(teamsScenario, useTeamsDeps());
   const web = useScenarioRun(webResearchScenario, deps);
-  const security = useScenarioRun(securityScenario, useSecurityDeps());
+  const security = useScenarioRun(securityScenario, useSecurityDeps(knowledgeDeps));
   const observability = useScenarioRun(observabilityScenario, useObservabilityDeps());
 
   return [

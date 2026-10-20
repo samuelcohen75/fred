@@ -15,12 +15,11 @@
 import { useMemo } from "react";
 import { KeyCloakService } from "../../../../security/KeycloakService";
 import type { HeaderMap, SecurityDeps } from "../scenarios/securityScenario";
-import { useKnowledgeDeps } from "./knowledge";
+import type { KnowledgeDeps } from "../scenarios/knowledgeScenario";
 
 const LOCAL = /^(localhost|127\.|\[::1\])/;
 
-export function useSecurityDeps(): SecurityDeps {
-  const knowledge = useKnowledgeDeps();
+export function useSecurityDeps(knowledge: KnowledgeDeps): SecurityDeps {
   return useMemo(
     () => ({
       origin: { https: window.location.protocol === "https:", local: LOCAL.test(window.location.hostname) },

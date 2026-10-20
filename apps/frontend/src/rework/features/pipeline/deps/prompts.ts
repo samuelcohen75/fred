@@ -15,11 +15,11 @@
 import { useMemo } from "react";
 import { controlPlaneApi } from "../../../../slices/controlPlane/controlPlaneOpenApi";
 import type { PromptsDeps } from "../scenarios/promptsScenario";
-import { usePipelineDeps } from "../usePipelineRun";
+import type { PipelineDeps } from "../types";
 import { FRESH, useApiDispatch } from "./api";
 
-export function usePromptsDeps(): PromptsDeps {
-  const base = usePipelineDeps();
+/** Extends the shared base deps, so the page keeps one set of product hooks. */
+export function usePromptsDeps(base: PipelineDeps): PromptsDeps {
   const dispatch = useApiDispatch();
   return useMemo(() => {
     const cp = controlPlaneApi.endpoints;

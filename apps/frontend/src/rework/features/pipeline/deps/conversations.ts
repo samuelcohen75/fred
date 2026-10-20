@@ -16,11 +16,11 @@ import { useMemo } from "react";
 import { controlPlaneApi } from "../../../../slices/controlPlane/controlPlaneOpenApi";
 import { knowledgeFlowApi } from "../../../../slices/knowledgeFlow/knowledgeFlowOpenApi";
 import type { ConversationsDeps } from "../scenarios/conversationsScenario";
-import { usePipelineDeps } from "../usePipelineRun";
+import type { PipelineDeps } from "../types";
 import { FRESH, useApiDispatch } from "./api";
 
-export function useConversationsDeps(): ConversationsDeps {
-  const base = usePipelineDeps();
+/** Extends the shared base deps, so the page keeps one set of product hooks. */
+export function useConversationsDeps(base: PipelineDeps): ConversationsDeps {
   const dispatch = useApiDispatch();
   return useMemo(() => {
     const cp = controlPlaneApi.endpoints;

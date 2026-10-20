@@ -15,11 +15,11 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { controlPlaneApi } from "../../../../slices/controlPlane/controlPlaneOpenApi";
 import type { AgentsDeps } from "../scenarios/agentsScenario";
-import { usePipelineDeps } from "../usePipelineRun";
+import type { PipelineDeps } from "../types";
 import { FRESH, useApiDispatch } from "./api";
 
-export function useAgentsDeps(): AgentsDeps {
-  const base = usePipelineDeps();
+/** Extends the shared base deps, so the page keeps one set of product hooks. */
+export function useAgentsDeps(base: PipelineDeps): AgentsDeps {
   const dispatch = useApiDispatch();
   const { i18n } = useTranslation();
   const locale = i18n.language?.startsWith("fr") ? "fr" : "en";

@@ -14,14 +14,14 @@
 import { useMemo } from "react";
 import { knowledgeFlowApi } from "../../../../slices/knowledgeFlow/knowledgeFlowOpenApi";
 import type { KnowledgeDeps } from "../scenarios/knowledgeScenario";
-import { usePipelineDeps } from "../usePipelineRun";
+import type { PipelineDeps } from "../types";
 import { FRESH, useApiDispatch } from "./api";
 
 // Fixtures live in the personal space, so every scoped call says so.
 const PERSONAL = "personal" as const;
 
-export function useKnowledgeDeps(): KnowledgeDeps {
-  const base = usePipelineDeps();
+/** Extends the shared base deps, so the page keeps one set of product hooks. */
+export function useKnowledgeDeps(base: PipelineDeps): KnowledgeDeps {
   const dispatch = useApiDispatch();
   return useMemo(() => {
     const kf = knowledgeFlowApi.endpoints;
