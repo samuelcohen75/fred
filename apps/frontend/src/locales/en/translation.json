@@ -2575,7 +2575,7 @@
         },
         "authorization": {
           "title": "Authorization",
-          "subtitle": "Proves the live API honors the authorization model: platform-admin flags match real endpoint access, and nobody, not even a platform admin, gets implicit access to a team they don't belong to."
+          "subtitle": "Proves the live API honors the authorization model: platform-admin flags match real endpoint access, protected routes of every backend refuse a missing, malformed or forged token, administration routes follow your platform role, and team content stays closed to a team you do not belong to, even for a platform admin."
         },
         "knowledge": {
           "title": "Documents and knowledge",

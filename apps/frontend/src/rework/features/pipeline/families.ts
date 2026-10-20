@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import type { IconType } from "../../components/shared/utils/Type";
+import { useAuthorizationDeps } from "./deps/authorization";
 import { usePlatformDeps } from "./deps/platform";
 import { agentsScenario } from "./scenarios/agentsScenario";
+import { authorizationScenario } from "./scenarios/authorizationScenario";
 import { knowledgeScenario } from "./scenarios/knowledgeScenario";
 import { platformScenario } from "./scenarios/platformScenario";
 import { promptsScenario } from "./scenarios/promptsScenario";
@@ -35,7 +37,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const deps = usePipelineDeps();
   const platform = useScenarioRun(platformScenario, usePlatformDeps());
   const identity = useAuthzProbeRun();
-  const authorization = useAuthzProbeRun();
+  const authorization = useScenarioRun(authorizationScenario, useAuthorizationDeps());
   const knowledge = useScenarioRun(knowledgeScenario, deps);
   const agents = useScenarioRun(agentsScenario, deps);
   const prompts = useScenarioRun(promptsScenario, deps);
@@ -44,7 +46,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   return [
     { id: "platform", icon: "cloud", run: platform },
     { id: "identity", icon: "person", run: { ...identity, start: identity.runIdentity } },
-    { id: "authorization", icon: "admin_panel_settings", run: { ...authorization, start: authorization.runForMyself } },
+    { id: "authorization", icon: "admin_panel_settings", run: authorization },
     { id: "knowledge", icon: "database", run: knowledge },
     { id: "agents", icon: "smart_toy", run: agents },
     { id: "prompts", icon: "notes", run: prompts },

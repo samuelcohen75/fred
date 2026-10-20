@@ -2575,7 +2575,7 @@
         },
         "authorization": {
           "title": "Autorisation",
-          "subtitle": "Prouve que l'API réelle respecte le modèle d'autorisation : les drapeaux d'administration de la plateforme correspondent aux accès réels, et personne, pas même un administrateur de la plateforme, n'a d'accès implicite à une équipe dont il n'est pas membre."
+          "subtitle": "Prouve que l'API réelle respecte le modèle d'autorisation : les drapeaux d'administration correspondent aux accès réels, les routes protégées de chaque backend refusent un jeton absent, malformé ou falsifié, les routes d'administration suivent votre rôle sur la plateforme, et le contenu d'une équipe dont vous n'êtes pas membre reste fermé, même à un administrateur de la plateforme."
         },
         "knowledge": {
           "title": "Documents et connaissances",
