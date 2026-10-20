@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import type { IconType } from "../../components/shared/utils/Type";
+import { useAgentsDeps } from "./deps/agents";
 import { useAuthorizationDeps } from "./deps/authorization";
 import { useKnowledgeDeps } from "./deps/knowledge";
 import { usePlatformDeps } from "./deps/platform";
@@ -40,7 +41,7 @@ export function useSelfTestFamilies(): SelfTestFamily[] {
   const identity = useAuthzProbeRun();
   const authorization = useScenarioRun(authorizationScenario, useAuthorizationDeps());
   const knowledge = useScenarioRun(knowledgeScenario, useKnowledgeDeps());
-  const agents = useScenarioRun(agentsScenario, deps);
+  const agents = useScenarioRun(agentsScenario, useAgentsDeps());
   const prompts = useScenarioRun(promptsScenario, deps);
   const web = useScenarioRun(webResearchScenario, deps);
 

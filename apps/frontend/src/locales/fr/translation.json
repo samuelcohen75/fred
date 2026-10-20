@@ -2583,7 +2583,7 @@
         },
         "agents": {
           "title": "Agents",
-          "subtitle": "Inscrit une instance temporaire de l'agent d'auto-test déterministe dans votre espace personnel et vérifie que sa configuration atteint chaque tour."
+          "subtitle": "Inscrit un agent d'auto-test temporaire dans votre espace personnel. Vérifie que son prompt système est transmis, que son modèle est utilisable, qu'une configuration modifiée atteint plusieurs tours suivants, qu'un agent désactivé ne peut pas répondre, les destinations de copie, un duplicata sous un nom choisi et le refus d'un second, une copie sous un nom libre, et des conversations simultanées qui reçoivent chacune seulement leur propre contexte."
         },
         "prompts": {
           "title": "Prompts",

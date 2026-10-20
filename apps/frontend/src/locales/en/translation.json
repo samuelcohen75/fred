@@ -2583,7 +2583,7 @@
         },
         "agents": {
           "title": "Agents",
-          "subtitle": "Enrolls a temporary instance of the deterministic self-test agent in your personal space and checks that its configuration reaches every turn."
+          "subtitle": "Enrolls a temporary self-test agent in your personal space. Checks that its system prompt is delivered, that its chat model is usable, that an updated configuration reaches several following turns, that a disabled agent cannot run, the copy targets, a duplicate under a chosen name and the refusal of a second one, a copy under a free name, and concurrent conversations that each receive only their own context."
         },
         "prompts": {
           "title": "Prompts",

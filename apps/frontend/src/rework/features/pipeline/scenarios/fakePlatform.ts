@@ -15,6 +15,7 @@
 // behaves like the deterministic self-test agent: it echoes retrieved text and
 // the prompts it received.
 import type { PipelineDeps, Reporter, StepReport } from "../types";
+import type { AgentsDeps } from "./agentsScenario";
 import type { KnowledgeDeps } from "./knowledgeScenario";
 import { PROBE, PROMPT_PROBE, SELF_TEST_AGENT_ID } from "./corpus";
 
@@ -67,6 +68,33 @@ export class FakePlatform {
   /** Documents whose chunks the index still returns after a delete (simulates residue). */
   residue: FakeDocument[] = [];
   auditAnomalies = 0;
+
+  agentsDeps(): AgentsDeps {
+    const base = this.deps();
+    return {
+      ...base,
+      updateAgent: async (id, { system, enabled }) => {
+        const agent = this.agents.get(id);
+        if (!agent) throw Object.assign(new Error("not found"), { status: 404 });
+        if (system !== undefined) agent.system = system;
+        if (enabled !== undefined) agent.enabled = enabled;
+      },
+      listAgents: async () => [...this.agents].map(([id, a]) => ({ id, name: a.name })),
+      effectiveModel: async () => ({ name: "chat-model", usable: true }),
+      copyTargets: async () => [{ teamId: base.teamId, templateEnabled: true }],
+      duplicate: async (id, name) => {
+        const source = this.agents.get(id);
+        if (!source) throw Object.assign(new Error("not found"), { status: 404 });
+        const taken = new Set([...this.agents.values()].map((a) => a.name));
+        if (name && taken.has(name)) return { agentId: null, name: null, errorCode: "agent_name_conflict" };
+        let free = name ?? `${source.name} (copy)`;
+        for (let n = 2; !name && taken.has(free); n++) free = `${source.name} (copy ${n})`;
+        const copyId = this.id("agent");
+        this.agents.set(copyId, { ...source, name: free });
+        return { agentId: copyId, name: free, errorCode: null };
+      },
+    };
+  }
 
   knowledgeDeps(): KnowledgeDeps {
     return {

@@ -12,19 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { describe, expect, it } from "vitest";
-import { agentsScenario } from "./agentsScenario";
 import { promptsScenario } from "./promptsScenario";
 import { collect, FakePlatform, signal } from "./fakePlatform";
-
-describe("agentsScenario", () => {
-  it("delivers the enrollment system prompt and deletes the instance", async () => {
-    const platform = new FakePlatform();
-    const run = collect();
-    await agentsScenario(platform.deps(), run.report, signal);
-    expect(run.status("query-system-prompt")).toBe("passed");
-    expect(platform.agents.size).toBe(0);
-  });
-});
 
 describe("promptsScenario", () => {
   it("delivers the attached prompt and deletes session, prompt and agent", async () => {
