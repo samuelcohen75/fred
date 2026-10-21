@@ -163,3 +163,15 @@ platform:
         en: "Review a folder of documents and record what was decided."
         fr: "Passer en revue un dossier de documents et consigner les décisions."
       enabled: true
+    - app_id: thanos
+      ui_prefix: /apps/thanos
+      version: 0.1.0
+      icon: monitoring
+      display_name:
+        en: "ThaNOS"
+        fr: "ThaNOS"
+      description:
+        en: "Business monitoring: order intake, revenue and margins."
+        fr: "Pilotage des affaires : prises de commande, chiffre d'affaires et marges."
+      enabled: true
+
